@@ -18,10 +18,12 @@ export function DeviceDetail({
   device,
   open,
   onOpenChange,
+  onUpdate,
 }: {
   device: Device | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  onUpdate?: () => void
 }) {
   const meta = device ? deviceStatusMeta[device.status] : null
   const usedPct = device
@@ -38,7 +40,13 @@ export function DeviceDetail({
       badge={meta && <StatusBadge label={meta.label} tone={meta.tone} pulse={device?.status === "online"} />}
       footer={
         <>
-          <Button size="sm" disabled={!needsUpdate}>
+          <Button
+            size="sm"
+            onClick={() => {
+              onOpenChange(false)
+              onUpdate?.()
+            }}
+          >
             Đẩy cập nhật
           </Button>
           <Button size="sm" variant="outline">

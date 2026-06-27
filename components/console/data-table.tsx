@@ -71,6 +71,10 @@ export function DataTable<T extends { id: string }>({
   onRowClick,
   activeRowId,
   emptyMessage = "Không có dữ liệu phù hợp",
+  selectable = false,
+  selectedIds,
+  onToggleRow,
+  onToggleAll,
 }: {
   columns: Column<T>[]
   rows: T[]
@@ -80,12 +84,28 @@ export function DataTable<T extends { id: string }>({
   onRowClick?: (row: T) => void
   activeRowId?: string | null
   emptyMessage?: string
+  selectable?: boolean
+  selectedIds?: Set<string>
+  onToggleRow?: (id: string) => void
+  onToggleAll?: (checked: boolean) => void
 }) {
+  const allChecked = selectable && rows.length > 0 && rows.every((r) => selectedIds?.has(r.id))
   return (
     <div className="overflow-x-auto rounded-lg border bg-card">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40">
+            {selectable && (
+              <TableHead className="w-10 pl-4">
+                <input
+                  type="checkbox"
+                  aria-label="Chọn tất cả"
+                  className="size-4 cursor-pointer accent-primary align-middle"
+                  checked={allChecked}
+                  onChange={(e) => onToggleAll?.(e.target.checked)}
+                />
+              </TableHead>
+            )}
             {columns.map((col) => {
               const isActive = sortKey === col.key
               const alignClass =
@@ -135,7 +155,7 @@ export function DataTable<T extends { id: string }>({
         <TableBody>
           {rows.length === 0 ? (
             <TableRow className="hover:bg-transparent">
-              <TableCell colSpan={columns.length} className="h-40 p-0">
+              <TableCell colSpan={columns.length + (selectable ? 1 : 0)} className="h-40 p-0">
                 <Empty message={emptyMessage} />
               </TableCell>
             </TableRow>
@@ -150,6 +170,17 @@ export function DataTable<T extends { id: string }>({
                   "data-[active=true]:bg-accent/60",
                 )}
               >
+                {selectable && (
+                  <TableCell className="w-10 pl-4" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      aria-label="Chọn dòng"
+                      className="size-4 cursor-pointer accent-primary align-middle"
+                      checked={selectedIds?.has(row.id) ?? false}
+                      onChange={() => onToggleRow?.(row.id)}
+                    />
+                  </TableCell>
+                )}
                 {columns.map((col) => {
                   const alignClass =
                     col.align === "right"

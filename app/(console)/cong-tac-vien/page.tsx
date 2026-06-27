@@ -14,7 +14,7 @@ import {
   type Column,
 } from "@/components/console/data-table"
 import { StatusBadge } from "@/components/console/status-badge"
-import { CollaboratorDetail } from "@/components/console/collaborator-detail"
+import { useRouter } from "next/navigation"
 import { collaborators, facilities, deviceName } from "@/lib/mock-data"
 import { collaboratorStatusMeta } from "@/lib/labels"
 import type { Collaborator } from "@/lib/types"
@@ -33,8 +33,7 @@ const facilityOptions = [
 
 const statusOptions = [
   { label: "Tất cả trạng thái", value: "all" },
-  { label: "Đang làm việc", value: "active" },
-  { label: "Rảnh", value: "idle" },
+  { label: "Đang quay", value: "active" },
   { label: "Nghỉ", value: "off" },
 ]
 
@@ -43,8 +42,7 @@ export default function CollaboratorsPage() {
   const [facility, setFacility] = React.useState("all")
   const [status, setStatus] = React.useState("all")
   const [page, setPage] = React.useState(1)
-  const [selected, setSelected] = React.useState<Collaborator | null>(null)
-  const [open, setOpen] = React.useState(false)
+  const router = useRouter()
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -183,11 +181,7 @@ export default function CollaboratorsPage() {
         sortKey={sortKey}
         sortDir={sortDir}
         onSort={toggleSort}
-        activeRowId={open ? selected?.id : null}
-        onRowClick={(c) => {
-          setSelected(c)
-          setOpen(true)
-        }}
+        onRowClick={(c) => router.push(`/cong-tac-vien/${c.id}`)}
         emptyMessage="Không tìm thấy cộng tác viên phù hợp"
       />
 
@@ -196,12 +190,6 @@ export default function CollaboratorsPage() {
         pageSize={PAGE_SIZE}
         total={sorted.length}
         onPageChange={setPage}
-      />
-
-      <CollaboratorDetail
-        collaborator={selected}
-        open={open}
-        onOpenChange={setOpen}
       />
     </div>
   )

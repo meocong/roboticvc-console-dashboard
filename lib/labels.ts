@@ -19,8 +19,7 @@ export const facilityStatusMeta: Record<string, StatusMeta> = {
 }
 
 export const collaboratorStatusMeta: Record<string, StatusMeta> = {
-  active: { label: "Đang làm việc", tone: "success" },
-  idle: { label: "Rảnh", tone: "warning" },
+  active: { label: "Đang quay", tone: "success" },
   off: { label: "Nghỉ", tone: "neutral" },
 }
 

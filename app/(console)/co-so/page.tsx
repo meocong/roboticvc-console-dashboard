@@ -12,7 +12,7 @@ import {
   type Column,
 } from "@/components/console/data-table"
 import { StatusBadge } from "@/components/console/status-badge"
-import { FacilityDetail } from "@/components/console/facility-detail"
+import { useRouter } from "next/navigation"
 import { facilities, devices, collaborators } from "@/lib/mock-data"
 import { facilityStatusMeta } from "@/lib/labels"
 import type { Facility } from "@/lib/types"
@@ -38,8 +38,7 @@ export default function FacilitiesPage() {
   const [region, setRegion] = React.useState("all")
   const [status, setStatus] = React.useState("all")
   const [page, setPage] = React.useState(1)
-  const [selected, setSelected] = React.useState<Facility | null>(null)
-  const [open, setOpen] = React.useState(false)
+  const router = useRouter()
 
   const deviceCount = React.useMemo(() => {
     const map: Record<string, number> = {}
@@ -186,11 +185,7 @@ export default function FacilitiesPage() {
         sortKey={sortKey}
         sortDir={sortDir}
         onSort={toggleSort}
-        activeRowId={open ? selected?.id : null}
-        onRowClick={(f) => {
-          setSelected(f)
-          setOpen(true)
-        }}
+        onRowClick={(f) => router.push(`/co-so/${f.id}`)}
         emptyMessage="Không tìm thấy cơ sở phù hợp"
       />
 
@@ -200,8 +195,6 @@ export default function FacilitiesPage() {
         total={sorted.length}
         onPageChange={setPage}
       />
-
-      <FacilityDetail facility={selected} open={open} onOpenChange={setOpen} />
     </div>
   )
 }

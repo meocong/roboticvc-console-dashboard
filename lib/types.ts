@@ -7,7 +7,7 @@ export type DeviceStatus =
   | "offline"
   | "error"
 
-export type CollaboratorStatus = "active" | "idle" | "off"
+export type CollaboratorStatus = "active" | "off"
 
 export type VersionChannel = "stable" | "beta"
 export type VersionPolicy = "manual" | "auto" | "forced"
@@ -75,6 +75,7 @@ export interface VideoAsset {
   deviceId: string
   streams: ("head_cam" | "wrist_cam" | "depth")[]
   durationMin: number
+  qcMinutes: number
   sizeGb: number
   status: VideoStatus
   recordedAt: string

@@ -115,11 +115,12 @@ const skillPool = [
   "Dán nhãn",
 ]
 
-const collabStatuses: CollaboratorStatus[] = ["active", "idle", "off"]
+// Đa số đang quay; ~1/4 nghỉ.
+const collabStatuses: CollaboratorStatus[] = ["active", "active", "active", "off"]
 
 export const collaborators: Collaborator[] = collaboratorNames.map((name, i) => {
   const facility = facilities[i % facilities.length]
-  const status = collabStatuses[i % 3]
+  const status = collabStatuses[i % collabStatuses.length]
   const skillCount = 1 + (i % 3)
   const skills = Array.from(
     { length: skillCount },
@@ -321,6 +322,11 @@ export const videoAssets: VideoAsset[] = Array.from({ length: 52 }, (_, i) => {
   if (hasWrist) streams.push("wrist_cam")
   if (hasDepth) streams.push("depth")
   const duration = 18 + ((i * 13) % 95)
+  // Giờ QC ~ 30-55% thời lượng quay (video chưa xử lý xong thì chưa QC).
+  const qcMinutes =
+    status === "uploaded" || status === "processing"
+      ? 0
+      : Math.round(duration * (0.3 + ((i * 5) % 25) / 100))
   const dayOffset = i % 28
   return {
     id: `vid-${(i + 1).toString().padStart(3, "0")}`,
@@ -330,6 +336,7 @@ export const videoAssets: VideoAsset[] = Array.from({ length: 52 }, (_, i) => {
     deviceId: device.id,
     streams,
     durationMin: duration,
+    qcMinutes,
     sizeGb: Number((duration * 0.18 * streams.length).toFixed(1)),
     status,
     recordedAt: new Date(2025, 5, 27 - Math.floor(dayOffset), 8 + (i % 9), (i * 7) % 60).toISOString(),
@@ -403,3 +410,50 @@ export const totalGcsUsedTb = Number(
 export const pendingVideoCount = videoAssets.filter(
   (v) => v.status === "uploaded" || v.status === "processing",
 ).length
+
+/* ------------------------------------------------------------------ */
+/* Hours / per-entity stats                                            */
+/* ------------------------------------------------------------------ */
+
+export const totalRecordedHours = Math.round(
+  videoAssets.reduce((s, v) => s + v.durationMin, 0) / 60,
+)
+export const totalQcHours = Math.round(
+  videoAssets.reduce((s, v) => s + v.qcMinutes, 0) / 60,
+)
+
+export function collaboratorStats(id: string) {
+  const vids = videoAssets.filter((v) => v.collaboratorId === id)
+  const recordedMin = vids.reduce((s, v) => s + v.durationMin, 0)
+  const qcMin = vids.reduce((s, v) => s + v.qcMinutes, 0)
+  return {
+    videos: vids.length,
+    recordedHours: Math.round((recordedMin / 60) * 10) / 10,
+    qcHours: Math.round((qcMin / 60) * 10) / 10,
+    recordedMin,
+    qcMin,
+  }
+}
+
+export function facilityStats(id: string) {
+  const facDevices = devices.filter((d) => d.facilityId === id)
+  const facCollabs = collaborators.filter((c) => c.facilityId === id)
+  const facVideos = videoAssets.filter((v) => v.facilityId === id)
+  return {
+    devices: facDevices,
+    collaborators: facCollabs,
+    videos: facVideos,
+    online: facDevices.filter((d) => d.status === "online" || d.status === "uploading").length,
+    issues: facDevices.filter((d) => d.status === "error" || d.status === "offline").length,
+    usedGb: facVideos.reduce((s, v) => s + v.sizeGb, 0),
+    recordedHours: Math.round(facVideos.reduce((s, v) => s + v.durationMin, 0) / 60),
+  }
+}
+
+/** Top CTV theo giờ quay (cho dashboard). */
+export function topCollaboratorsByHours(limit = 5) {
+  return collaborators
+    .map((c) => ({ collaborator: c, ...collaboratorStats(c.id) }))
+    .sort((a, b) => b.recordedMin - a.recordedMin)
+    .slice(0, limit)
+}

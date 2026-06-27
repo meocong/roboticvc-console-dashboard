@@ -8,6 +8,8 @@ import {
   ClapperboardIcon,
   HardDriveIcon,
   ChevronRightIcon,
+  TimerIcon,
+  ShieldCheckIcon,
 } from "lucide-react"
 import { KpiCard } from "@/components/console/kpi-card"
 import {
@@ -39,6 +41,9 @@ import {
   collaboratorName,
   pendingVideoCount,
   totalGcsUsedTb,
+  totalRecordedHours,
+  totalQcHours,
+  topCollaboratorsByHours,
 } from "@/lib/mock-data"
 import { deviceStatusMeta } from "@/lib/labels"
 import { formatRelativeTime } from "@/lib/format"
@@ -58,10 +63,42 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-5">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <KpiCard label="Cơ sở" value={facilities.length} icon={Building2Icon} sub={`${facilities.filter((f) => f.status === "active").length} đang hoạt động`} />
-        <KpiCard label="Cộng tác viên" value={collaborators.length} icon={UsersIcon} accent="info" sub={`${collaborators.filter((c) => c.status === "active").length} đang làm việc`} />
+        <KpiCard label="Cộng tác viên" value={collaborators.length} icon={UsersIcon} accent="info" sub={`${collaborators.filter((c) => c.status === "active").length} đang quay`} />
         <KpiCard label="Thiết bị trực tuyến" value={`${online}/${devices.length}`} icon={WifiIcon} accent="success" sub={`${offline} ngoại tuyến / lỗi`} />
         <KpiCard label="Video chờ xử lý" value={pendingVideoCount} icon={ClapperboardIcon} accent="warning" sub="đang tải lên / xử lý" />
         <KpiCard label="Dung lượng GCS" value={`${totalGcsUsedTb} TB`} icon={HardDriveIcon} accent="neutral" sub="đã sử dụng" />
+      </div>
+
+      {/* Sản lượng quay & QC */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3">
+          <KpiCard label="Tổng giờ đã quay" value={`${totalRecordedHours}h`} icon={TimerIcon} accent="primary" sub="toàn bộ CTV" />
+          <KpiCard label="Tổng giờ QC" value={`${totalQcHours}h`} icon={ShieldCheckIcon} accent="success" sub="đảm bảo chất lượng" />
+        </div>
+        <Card className="gap-0 py-0 lg:col-span-2">
+          <CardHeader className="border-b py-3">
+            <CardTitle className="text-sm">Top CTV theo giờ quay</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="flex flex-col divide-y">
+              {topCollaboratorsByHours(5).map((row, i) => (
+                <button
+                  key={row.collaborator.id}
+                  onClick={() => router.push(`/cong-tac-vien/${row.collaborator.id}`)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-accent/40"
+                >
+                  <span className="w-5 text-sm font-semibold tabular-nums text-muted-foreground">{i + 1}</span>
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-sm font-medium">{row.collaborator.name}</span>
+                    <span className="text-xs text-muted-foreground">{facilityName(row.collaborator.facilityId)}</span>
+                  </div>
+                  <span className="text-sm font-semibold tabular-nums">{row.recordedHours}h</span>
+                  <span className="text-xs text-muted-foreground">QC {row.qcHours}h</span>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
