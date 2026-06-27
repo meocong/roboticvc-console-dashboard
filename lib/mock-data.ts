@@ -26,36 +26,6 @@ export const facilities: Facility[] = [
     status: "active",
   },
   {
-    id: "fac-hcm1",
-    name: "Trung tâm Logistics Tân Bình",
-    code: "HCM-01",
-    region: "TP. Hồ Chí Minh",
-    address: "Số 12 Trường Chinh, Tân Bình, TP.HCM",
-    contactName: "Trần Thị Mai",
-    contactPhone: "0902 345 678",
-    status: "active",
-  },
-  {
-    id: "fac-dn1",
-    name: "Kho vận Hòa Khánh",
-    code: "DN-01",
-    region: "Đà Nẵng",
-    address: "KCN Hòa Khánh, Liên Chiểu, Đà Nẵng",
-    contactName: "Lê Quang Vinh",
-    contactPhone: "0903 456 789",
-    status: "active",
-  },
-  {
-    id: "fac-hcm2",
-    name: "Xưởng lắp ráp Bình Dương",
-    code: "BD-01",
-    region: "Bình Dương",
-    address: "KCN VSIP I, Thuận An, Bình Dương",
-    contactName: "Phạm Văn Tâm",
-    contactPhone: "0904 567 890",
-    status: "active",
-  },
-  {
     id: "fac-hn2",
     name: "Trung tâm phân loại Long Biên",
     code: "HN-02",
@@ -63,14 +33,44 @@ export const facilities: Facility[] = [
     address: "Số 5 Ngọc Lâm, Long Biên, Hà Nội",
     contactName: "Đỗ Thị Lan",
     contactPhone: "0905 678 901",
+    status: "active",
+  },
+  {
+    id: "fac-hp1",
+    name: "Cảng Logistics Đình Vũ",
+    code: "HP-01",
+    region: "Hải Phòng",
+    address: "KCN Đình Vũ, Hải An, Hải Phòng",
+    contactName: "Trần Thị Mai",
+    contactPhone: "0902 345 678",
+    status: "active",
+  },
+  {
+    id: "fac-bn1",
+    name: "Nhà máy điện tử Quế Võ",
+    code: "BN-01",
+    region: "Bắc Ninh",
+    address: "KCN Quế Võ, TP. Bắc Ninh",
+    contactName: "Lê Quang Vinh",
+    contactPhone: "0903 456 789",
+    status: "active",
+  },
+  {
+    id: "fac-qn1",
+    name: "Kho vận Hạ Long",
+    code: "QN-01",
+    region: "Quảng Ninh",
+    address: "KCN Cái Lân, Hạ Long, Quảng Ninh",
+    contactName: "Phạm Văn Tâm",
+    contactPhone: "0904 567 890",
     status: "paused",
   },
   {
-    id: "fac-ct1",
-    name: "Kho nông sản Cần Thơ",
-    code: "CT-01",
-    region: "Cần Thơ",
-    address: "KCN Trà Nóc, Bình Thủy, Cần Thơ",
+    id: "fac-vp1",
+    name: "Xưởng lắp ráp Bình Xuyên",
+    code: "VP-01",
+    region: "Vĩnh Phúc",
+    address: "KCN Bình Xuyên, Vĩnh Phúc",
     contactName: "Võ Minh Khôi",
     contactPhone: "0906 789 012",
     status: "active",
@@ -310,7 +310,7 @@ const videoStatusPlan: VideoStatus[] = [
   "ready",
 ]
 
-export const videoAssets: VideoAsset[] = Array.from({ length: 52 }, (_, i) => {
+export const videoAssets: VideoAsset[] = Array.from({ length: 360 }, (_, i) => {
   const device = devices[i % devices.length]
   const collaborator =
     collaborators.find((c) => c.id === device.collaboratorId) ??
@@ -321,7 +321,8 @@ export const videoAssets: VideoAsset[] = Array.from({ length: 52 }, (_, i) => {
   const streams: VideoAsset["streams"] = ["head_cam"]
   if (hasWrist) streams.push("wrist_cam")
   if (hasDepth) streams.push("depth")
-  const duration = 18 + ((i * 13) % 95)
+  // Mỗi phiên ~ 1 ca làm việc (4-9 giờ) → tổng ~2.300 giờ thu thập.
+  const duration = 240 + ((i * 47) % 300)
   // Giờ QC ~ 30-55% thời lượng quay (video chưa xử lý xong thì chưa QC).
   const qcMinutes =
     status === "uploaded" || status === "processing"

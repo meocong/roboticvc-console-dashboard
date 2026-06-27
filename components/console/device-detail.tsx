@@ -1,6 +1,14 @@
 "use client"
 
-import { CpuIcon } from "lucide-react"
+import {
+  CpuIcon,
+  CameraIcon,
+  VideoIcon,
+  HardDriveIcon,
+  BatteryChargingIcon,
+  PackageIcon,
+} from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import {
   DetailDrawer,
   DetailRow,
@@ -13,6 +21,16 @@ import { deviceStatusMeta } from "@/lib/labels"
 import { collaboratorName, facilityName } from "@/lib/mock-data"
 import { formatGb, formatRelativeTime } from "@/lib/format"
 import type { Device } from "@/lib/types"
+
+// Cấu hình phần cứng chuẩn của 1 bộ EGOkit (theo sơ đồ lắp đặt).
+const EGOKIT_COMPONENTS: { icon: LucideIcon; name: string; role: string; count: number }[] = [
+  { icon: CameraIcon, name: "Intel RealSense D455", role: "Camera gắn đầu (RGB-D + chiều sâu)", count: 1 },
+  { icon: VideoIcon, name: "GoPro HERO12", role: "Camera cổ tay (trái & phải)", count: 2 },
+  { icon: CpuIcon, name: "Raspberry Pi 5", role: "Bộ xử lý & đồng bộ", count: 1 },
+  { icon: HardDriveIcon, name: "SSD 256GB", role: "Lưu trữ cục bộ", count: 1 },
+  { icon: BatteryChargingIcon, name: "Pin sạc", role: "Nguồn di động", count: 1 },
+  { icon: PackageIcon, name: "Belt Box", role: "Hộp đeo hông/lưng", count: 1 },
+]
 
 export function DeviceDetail({
   device,
@@ -105,6 +123,27 @@ export function DeviceDetail({
               <DetailRow label="Cơ sở" value={facilityName(device.facilityId)} />
               <DetailRow label="Cộng tác viên" value={collaboratorName(device.collaboratorId)} />
               <DetailRow label="Model" value={device.model} />
+            </div>
+          </DetailSection>
+
+          <DetailSection title="Cấu hình EGOkit">
+            <div className="flex flex-col divide-y rounded-lg border">
+              {EGOKIT_COMPONENTS.map((c) => (
+                <div key={c.name} className="flex items-center gap-3 px-3.5 py-2.5">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <c.icon className="size-4" />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <span className="text-sm font-medium">{c.name}</span>
+                    <span className="text-xs text-muted-foreground">{c.role}</span>
+                  </div>
+                  {c.count > 1 && (
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums">
+                      ×{c.count}
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
           </DetailSection>
         </>
