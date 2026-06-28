@@ -49,7 +49,7 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
             <MenuIcon className="size-4" />
           </Button>
           <div className="hidden min-w-0 md:block">
-            <h1 className="truncate text-sm font-semibold leading-tight">
+            <h1 className="truncate text-base font-semibold leading-tight tracking-tight">
               {meta?.title}
             </h1>
             <p className="truncate text-xs text-muted-foreground">

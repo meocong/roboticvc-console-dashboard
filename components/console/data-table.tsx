@@ -167,7 +167,7 @@ export function DataTable<T extends { id: string }>({
                 data-active={activeRowId === row.id}
                 className={cn(
                   onRowClick && "cursor-pointer",
-                  "data-[active=true]:bg-accent/60",
+                  "transition-colors hover:bg-muted/40 data-[active=true]:bg-accent/60",
                 )}
               >
                 {selectable && (
