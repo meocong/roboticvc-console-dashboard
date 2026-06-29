@@ -13,6 +13,7 @@ import {
 } from "@/components/console/data-table"
 import { StatusBadge } from "@/components/console/status-badge"
 import { useRouter } from "next/navigation"
+import { useSession } from "@/lib/session"
 import { facilities, devices, collaborators } from "@/lib/mock-data"
 import { facilityStatusMeta } from "@/lib/labels"
 import type { Facility } from "@/lib/types"
@@ -39,6 +40,12 @@ export default function FacilitiesPage() {
   const [status, setStatus] = React.useState("all")
   const [page, setPage] = React.useState(1)
   const router = useRouter()
+  const { role, facilityId } = useSession()
+
+  // Admin cơ sở không xem danh sách — chuyển về cơ sở của mình.
+  React.useEffect(() => {
+    if (role === "facility_admin" && facilityId) router.replace(`/co-so/${facilityId}`)
+  }, [role, facilityId, router])
 
   const deviceCount = React.useMemo(() => {
     const map: Record<string, number> = {}

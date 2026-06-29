@@ -15,6 +15,7 @@ import {
 } from "@/components/console/data-table"
 import { StatusBadge } from "@/components/console/status-badge"
 import { useRouter } from "next/navigation"
+import { useSession } from "@/lib/session"
 import { collaborators, facilities, deviceName } from "@/lib/mock-data"
 import { collaboratorStatusMeta } from "@/lib/labels"
 import type { Collaborator } from "@/lib/types"
@@ -43,10 +44,12 @@ export default function CollaboratorsPage() {
   const [status, setStatus] = React.useState("all")
   const [page, setPage] = React.useState(1)
   const router = useRouter()
+  const { scopedFacilityId } = useSession()
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase()
     return collaborators.filter((c) => {
+      if (scopedFacilityId && c.facilityId !== scopedFacilityId) return false
       if (facility !== "all" && c.facilityId !== facility) return false
       if (status !== "all" && c.status !== status) return false
       if (
@@ -56,7 +59,7 @@ export default function CollaboratorsPage() {
         return false
       return true
     })
-  }, [query, facility, status])
+  }, [query, facility, status, scopedFacilityId])
 
   const columns: Column<Collaborator>[] = [
     {
@@ -154,13 +157,15 @@ export default function CollaboratorsPage() {
             placeholder="Tìm theo tên, SĐT, kỹ năng..."
             className="w-full sm:w-72"
           />
-          <FilterSelect
-            value={facility}
-            onChange={setFacility}
-            options={facilityOptions}
-            ariaLabel="Lọc theo cơ sở"
-            className="w-52"
-          />
+          {!scopedFacilityId && (
+            <FilterSelect
+              value={facility}
+              onChange={setFacility}
+              options={facilityOptions}
+              ariaLabel="Lọc theo cơ sở"
+              className="w-52"
+            />
+          )}
           <FilterSelect
             value={status}
             onChange={setStatus}

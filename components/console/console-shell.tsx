@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { SidebarNav } from "./sidebar-nav"
 import { GlobalSearch } from "./global-search"
 import { ThemeToggle } from "./theme-toggle"
+import { RoleSwitcher } from "./role-switcher"
 import { pageTitles } from "./nav-items"
 
 export function ConsoleShell({ children }: { children: React.ReactNode }) {
@@ -58,6 +59,7 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex flex-1 items-center justify-end gap-2">
             <GlobalSearch />
+            <RoleSwitcher />
             <ThemeToggle />
           </div>
         </header>

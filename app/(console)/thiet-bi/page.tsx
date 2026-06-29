@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useSearchParams } from "next/navigation"
+import { useSession } from "@/lib/session"
 import { toast } from "sonner"
 import { UploadCloudIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -47,6 +48,7 @@ const SUMMARY: { status: DeviceStatus }[] = [
 function DevicesContent() {
   const counts = deviceStatusCounts()
   const searchParams = useSearchParams()
+  const { scopedFacilityId } = useSession()
   const [query, setQuery] = React.useState(searchParams.get("q") ?? "")
   const [facility, setFacility] = React.useState("all")
   const [status, setStatus] = React.useState("all")
@@ -87,12 +89,13 @@ function DevicesContent() {
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase()
     return devices.filter((d) => {
+      if (scopedFacilityId && d.facilityId !== scopedFacilityId) return false
       if (facility !== "all" && d.facilityId !== facility) return false
       if (status !== "all" && d.status !== status) return false
       if (q && !`${d.name} ${d.hardwareId} ${d.model}`.toLowerCase().includes(q)) return false
       return true
     })
-  }, [query, facility, status])
+  }, [query, facility, status, scopedFacilityId])
 
   const columns: Column<Device>[] = [
     {
@@ -176,7 +179,7 @@ function DevicesContent() {
 
   React.useEffect(() => {
     setPage(1)
-  }, [query, facility, status])
+  }, [query, facility, status, scopedFacilityId])
 
   const paged = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
@@ -205,7 +208,9 @@ function DevicesContent() {
           placeholder="Tìm theo tên, hardware ID, model..."
           className="w-full sm:w-72"
         />
-        <FilterSelect value={facility} onChange={setFacility} options={facilityOptions} ariaLabel="Lọc theo cơ sở" className="w-52" />
+        {!scopedFacilityId && (
+          <FilterSelect value={facility} onChange={setFacility} options={facilityOptions} ariaLabel="Lọc theo cơ sở" className="w-52" />
+        )}
         <FilterSelect value={status} onChange={setStatus} options={statusOptions} ariaLabel="Lọc theo trạng thái" className="w-44" />
       </div>
 

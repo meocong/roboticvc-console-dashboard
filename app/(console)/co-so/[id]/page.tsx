@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
+import { useSession } from "@/lib/session"
 import {
   ArrowLeftIcon,
   MapPinIcon,
@@ -41,7 +42,16 @@ const DEVICE_SUMMARY: DeviceStatus[] = ["online", "uploading", "updating", "offl
 
 export default function FacilityStatsPage() {
   const { id } = useParams<{ id: string }>()
+  const router = useRouter()
+  const { role, facilityId } = useSession()
   const facility = facilityById(id)
+
+  // Admin cơ sở chỉ được xem cơ sở của mình.
+  React.useEffect(() => {
+    if (role === "facility_admin" && facilityId && id !== facilityId) {
+      router.replace(`/co-so/${facilityId}`)
+    }
+  }, [role, facilityId, id, router])
 
   if (!facility) {
     return (

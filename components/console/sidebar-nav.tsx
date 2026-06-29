@@ -3,11 +3,26 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { TargetIcon } from "lucide-react"
-import { navItems } from "./nav-items"
+import { navItems, type NavItem } from "./nav-items"
+import { useSession } from "@/lib/session"
 import { cn } from "@/lib/utils"
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+  const { role, facilityId } = useSession()
+
+  // Admin cơ sở: chỉ Tổng quan (cơ sở mình) + CTV + Thiết bị + Video.
+  // Ẩn Phiên bản (firmware toàn hệ thống) + Cơ sở (danh sách nhiều cơ sở).
+  const items: NavItem[] =
+    role === "facility_admin"
+      ? navItems
+          .filter((i) => ["/", "/cong-tac-vien", "/thiet-bi", "/video"].includes(i.href))
+          .map((i) =>
+            i.href === "/" && facilityId
+              ? { ...i, href: `/co-so/${facilityId}`, label: "Tổng quan cơ sở" }
+              : i,
+          )
+      : navItems
 
   return (
     <div className="flex h-full flex-col">
@@ -28,7 +43,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         <p className="px-2 pb-1 pt-2 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
           Vận hành
         </p>
-        {navItems.map((item) => {
+        {items.map((item) => {
           const active =
             item.href === "/"
               ? pathname === "/"

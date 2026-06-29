@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
+import { useSession } from "@/lib/session"
 import { SearchInput } from "@/components/console/search-input"
 import { FilterSelect } from "@/components/console/filter-select"
 import { DataPagination } from "@/components/console/data-pagination"
@@ -38,6 +40,14 @@ function rolloutPct(v: Version) {
 }
 
 export default function VersionsPage() {
+  const router = useRouter()
+  const { role } = useSession()
+
+  // Phiên bản firmware = toàn hệ thống → chỉ superadmin.
+  React.useEffect(() => {
+    if (role === "facility_admin") router.replace("/")
+  }, [role, router])
+
   const [query, setQuery] = React.useState("")
   const [channel, setChannel] = React.useState("all")
   const [policy, setPolicy] = React.useState("all")

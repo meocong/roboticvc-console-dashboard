@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import {
   Building2Icon,
@@ -47,9 +48,19 @@ import {
 } from "@/lib/mock-data"
 import { deviceStatusMeta } from "@/lib/labels"
 import { formatRelativeTime } from "@/lib/format"
+import { useSession } from "@/lib/session"
 
 export default function DashboardPage() {
   const router = useRouter()
+  const { role, facilityId } = useSession()
+
+  // Admin cơ sở: tổng quan = trang cơ sở của mình.
+  useEffect(() => {
+    if (role === "facility_admin" && facilityId) {
+      router.replace(`/co-so/${facilityId}`)
+    }
+  }, [role, facilityId, router])
+
   const counts = deviceStatusCounts()
   const online = (counts.online ?? 0) + (counts.uploading ?? 0) + (counts.updating ?? 0)
   const offline = (counts.offline ?? 0) + (counts.error ?? 0)

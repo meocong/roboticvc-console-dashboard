@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useSession } from "@/lib/session"
 import { Badge } from "@/components/ui/badge"
 import { SearchInput } from "@/components/console/search-input"
 import { FilterSelect } from "@/components/console/filter-select"
@@ -47,16 +48,18 @@ export default function VideosPage() {
   const [page, setPage] = React.useState(1)
   const [selected, setSelected] = React.useState<VideoAsset | null>(null)
   const [open, setOpen] = React.useState(false)
+  const { scopedFacilityId } = useSession()
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase()
     return videoAssets.filter((v) => {
+      if (scopedFacilityId && v.facilityId !== scopedFacilityId) return false
       if (facility !== "all" && v.facilityId !== facility) return false
       if (status !== "all" && v.status !== status) return false
       if (q && !`${v.sessionCode} ${deviceName(v.deviceId)}`.toLowerCase().includes(q)) return false
       return true
     })
-  }, [query, facility, status])
+  }, [query, facility, status, scopedFacilityId])
 
   const columns: Column<VideoAsset>[] = [
     {
@@ -133,7 +136,7 @@ export default function VideosPage() {
 
   React.useEffect(() => {
     setPage(1)
-  }, [query, facility, status])
+  }, [query, facility, status, scopedFacilityId])
 
   const paged = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
@@ -162,7 +165,9 @@ export default function VideosPage() {
           placeholder="Tìm theo session, thiết bị..."
           className="w-full sm:w-72"
         />
-        <FilterSelect value={facility} onChange={setFacility} options={facilityOptions} ariaLabel="Lọc theo cơ sở" className="w-52" />
+        {!scopedFacilityId && (
+          <FilterSelect value={facility} onChange={setFacility} options={facilityOptions} ariaLabel="Lọc theo cơ sở" className="w-52" />
+        )}
         <FilterSelect value={status} onChange={setStatus} options={statusOptions} ariaLabel="Lọc theo trạng thái" className="w-44" />
       </div>
 
