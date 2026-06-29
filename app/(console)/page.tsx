@@ -12,7 +12,6 @@ import {
   ShieldCheckIcon,
 } from "lucide-react"
 import { KpiCard } from "@/components/console/kpi-card"
-import { CountUp } from "@/components/console/count-up"
 import {
   DevicesByFacilityChart,
   UploadTrendChart,
@@ -70,7 +69,7 @@ export default function DashboardPage() {
               Tổng quan thu thập dữ liệu
             </p>
             <p className="mt-1 text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
-              <CountUp value={`${totalRecordedHours}`} /> giờ
+              {totalRecordedHours.toLocaleString("vi-VN")} giờ
             </p>
             <p className="mt-1 text-sm text-primary-foreground/85">
               từ {collaborators.length} CTV · {devices.length} thiết bị · {facilities.length} cơ sở miền Bắc
@@ -78,7 +77,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-5">
             <div className="text-right">
-              <p className="text-2xl font-bold tabular-nums"><CountUp value={`${totalQcHours}`} />h</p>
+              <p className="text-2xl font-bold tabular-nums">{totalQcHours}h</p>
               <p className="text-xs text-primary-foreground/80">đã QC</p>
             </div>
             <div className="text-right">
