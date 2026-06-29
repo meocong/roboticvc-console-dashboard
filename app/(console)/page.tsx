@@ -12,6 +12,7 @@ import {
   ShieldCheckIcon,
 } from "lucide-react"
 import { KpiCard } from "@/components/console/kpi-card"
+import { CountUp } from "@/components/console/count-up"
 import {
   DevicesByFacilityChart,
   UploadTrendChart,
@@ -61,7 +62,35 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      {/* Hero */}
+      <div className="animate-rise relative overflow-hidden rounded-2xl border bg-gradient-to-br from-primary to-info p-5 text-primary-foreground shadow-sm sm:p-6">
+        <div className="relative z-10 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-medium tracking-wide text-primary-foreground/80 uppercase">
+              Tổng quan thu thập dữ liệu
+            </p>
+            <p className="mt-1 text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
+              <CountUp value={`${totalRecordedHours}`} /> giờ
+            </p>
+            <p className="mt-1 text-sm text-primary-foreground/85">
+              từ {collaborators.length} CTV · {devices.length} thiết bị · {facilities.length} cơ sở miền Bắc
+            </p>
+          </div>
+          <div className="flex items-center gap-5">
+            <div className="text-right">
+              <p className="text-2xl font-bold tabular-nums"><CountUp value={`${totalQcHours}`} />h</p>
+              <p className="text-xs text-primary-foreground/80">đã QC</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold tabular-nums">{online}/{devices.length}</p>
+              <p className="text-xs text-primary-foreground/80">trực tuyến</p>
+            </div>
+          </div>
+        </div>
+        <TimerIcon className="absolute -right-6 -bottom-8 size-44 text-primary-foreground/10" strokeWidth={1.2} />
+      </div>
+
+      <div className="stagger grid grid-cols-2 gap-3 lg:grid-cols-5">
         <KpiCard label="Cơ sở" value={facilities.length} icon={Building2Icon} sub={`${facilities.filter((f) => f.status === "active").length} đang hoạt động`} />
         <KpiCard label="Cộng tác viên" value={collaborators.length} icon={UsersIcon} accent="info" sub={`${collaborators.filter((c) => c.status === "active").length} đang quay`} />
         <KpiCard label="Thiết bị trực tuyến" value={`${online}/${devices.length}`} icon={WifiIcon} accent="success" sub={`${offline} ngoại tuyến / lỗi`} />

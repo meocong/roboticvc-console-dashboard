@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { CountUp } from "./count-up"
 
 const iconMap = {
   primary: "bg-primary/10 text-primary",
@@ -42,7 +43,9 @@ export function KpiCard({
           <Icon className="size-[18px]" />
         </div>
       </div>
-      <p className="pl-1.5 text-3xl font-bold tracking-tight tabular-nums">{value}</p>
+      <p className="pl-1.5 text-3xl font-bold tracking-tight tabular-nums">
+        <CountUp value={value} />
+      </p>
       {sub && <p className="truncate pl-1.5 text-xs text-muted-foreground">{sub}</p>}
     </Card>
   )

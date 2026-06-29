@@ -17,6 +17,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { KpiCard } from "@/components/console/kpi-card"
 import { StatusBadge } from "@/components/console/status-badge"
+import { StatusDonut } from "@/components/console/mini-charts"
 import {
   collaboratorById,
   collaboratorStats,
@@ -99,7 +100,7 @@ export default function CollaboratorStatsPage() {
       </Card>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="stagger grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard label="Video đã quay" value={stats.videos} icon={ClapperboardIcon} accent="info" />
         <KpiCard label="Tổng giờ quay" value={`${stats.recordedHours}h`} icon={TimerIcon} accent="primary" />
         <KpiCard label="Giờ QC" value={`${stats.qcHours}h`} icon={ShieldCheckIcon} accent="success" />
@@ -111,6 +112,19 @@ export default function CollaboratorStatsPage() {
           accent="neutral"
         />
       </div>
+
+      {/* Video status donut */}
+      <Card className="flex flex-col gap-3 p-4">
+        <h2 className="text-sm font-semibold">Phân bố trạng thái video</h2>
+        <StatusDonut
+          data={[
+            { name: "Sẵn sàng", value: vids.filter((v) => v.status === "ready").length, color: "var(--success)" },
+            { name: "Đang xử lý", value: vids.filter((v) => v.status === "processing").length, color: "var(--info)" },
+            { name: "Đã tải lên", value: vids.filter((v) => v.status === "uploaded").length, color: "var(--warning)" },
+            { name: "Lưu trữ", value: vids.filter((v) => v.status === "archived").length, color: "var(--muted-foreground)" },
+          ]}
+        />
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Device */}

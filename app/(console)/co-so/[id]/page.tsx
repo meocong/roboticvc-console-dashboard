@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { KpiCard } from "@/components/console/kpi-card"
+import { StatusDonut } from "@/components/console/mini-charts"
 import { StatTile } from "@/components/console/stat-tile"
 import { StatusBadge } from "@/components/console/status-badge"
 import { Meter } from "@/components/console/meter"
@@ -93,7 +94,7 @@ export default function FacilityStatsPage() {
       </Card>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <div className="stagger grid grid-cols-2 gap-3 lg:grid-cols-5">
         <KpiCard label="Thiết bị" value={stats.devices.length} icon={CpuIcon} accent="info" />
         <KpiCard label="Đang hoạt động" value={stats.online} icon={CpuIcon} accent="success" sub={`${stats.issues} cần chú ý`} />
         <KpiCard label="Cộng tác viên" value={stats.collaborators.length} icon={UsersIcon} accent="primary" />
@@ -101,12 +102,28 @@ export default function FacilityStatsPage() {
         <KpiCard label="Dung lượng" value={formatGb(stats.usedGb)} icon={HardDriveIcon} accent="warning" />
       </div>
 
-      {/* Device status breakdown */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        {DEVICE_SUMMARY.map((s) => {
-          const dm = deviceStatusMeta[s]
-          return <StatTile key={s} label={dm.label} value={deviceCounts[s] ?? 0} tone={dm.tone} />
-        })}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Device status donut */}
+        <Card className="flex flex-col gap-3 p-4">
+          <h2 className="text-sm font-semibold">Trạng thái thiết bị</h2>
+          <StatusDonut
+            data={[
+              { name: "Trực tuyến", value: deviceCounts.online ?? 0, color: "var(--success)" },
+              { name: "Đang upload", value: deviceCounts.uploading ?? 0, color: "var(--info)" },
+              { name: "Đang cập nhật", value: deviceCounts.updating ?? 0, color: "var(--warning)" },
+              { name: "Ngoại tuyến", value: deviceCounts.offline ?? 0, color: "var(--muted-foreground)" },
+              { name: "Lỗi", value: deviceCounts.error ?? 0, color: "var(--danger)" },
+            ]}
+          />
+        </Card>
+
+        {/* Device status tiles */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {DEVICE_SUMMARY.map((s) => {
+            const dm = deviceStatusMeta[s]
+            return <StatTile key={s} label={dm.label} value={deviceCounts[s] ?? 0} tone={dm.tone} />
+          })}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
