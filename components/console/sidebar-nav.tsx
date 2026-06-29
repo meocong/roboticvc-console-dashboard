@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BotIcon, TargetIcon } from "lucide-react"
+import { TargetIcon } from "lucide-react"
 import { navItems } from "./nav-items"
 import { cn } from "@/lib/utils"
 
@@ -12,13 +12,16 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-14 items-center gap-2.5 border-b px-4">
-        <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-info text-primary-foreground shadow-sm">
-          <BotIcon className="size-5" />
-        </div>
-        <div className="leading-tight">
-          <p className="text-sm font-semibold tracking-tight">RoboticVC</p>
-          <p className="text-[11px] text-muted-foreground">Console</p>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/tbrain-logo-sm.png"
+          alt="Tbrain"
+          className="h-6 w-auto shrink-0 dark:brightness-0 dark:invert"
+          draggable={false}
+        />
+        <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-semibold text-primary">
+          RoboticVC
+        </span>
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 p-3">
